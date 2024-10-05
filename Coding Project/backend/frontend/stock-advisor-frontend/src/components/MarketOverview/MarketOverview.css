@@ -1,0 +1,51 @@
+
+.market-overview {
+  margin-top: 40px;
+  padding-left: 20px;
+  width: 100%;
+}
+
+
+.market-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+  color: #000000;
+}
+
+.market-items {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.market-item {
+  text-align: left;
+  width: 30%;
+}
+
+.market-name {
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+  color: #000000;
+}
+
+.market-value {
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 5px;
+}
+
+.market-change {
+  font-size: 1.2rem;
+}
+
+.positive {
+  color: #16a34a; 
+}
+
+.negative {
+  color: #dc2626; 
+}

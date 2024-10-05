@@ -1,0 +1,32 @@
+.market-sectors {
+  margin-top: 40px;
+}
+
+.market-sectors h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #000000;
+}
+
+.sector-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sector-item span {
+  font-size: 1.2rem;
+  color: #000000;
+}
+
+.sector-change {
+  font-size: 1.2rem;
+}
+
+.positive {
+  color: #16a34a; 
+}
+
+.negative {
+  color: #dc2626; 
+}

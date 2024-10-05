@@ -1,0 +1,42 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'SourceSansPro', sans-serif;
+  background-color: #f8fafc; 
+  color: #000000; 
+}
+
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; 
+}
+
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto; 
+}
+
+
+.main-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
