@@ -1,0 +1,61 @@
+
+.watchlist-section {
+    margin-top: 40px;
+    padding: 20px;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #000;
+  }
+  
+
+  .watchlist {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .watchlist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e5e7eb; 
+    transition: background-color 0.2s ease;
+  }
+  
+  .watchlist-item:hover {
+    background-color: #f1f5f9; 
+  }
+  
+  .stock-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stock-name {
+    font-size: 1.5rem;
+    color: #000000;
+  }
+  
+  .stock-price {
+    font-size: 1.2rem;
+    color: #555555;
+    margin-top: 5px;
+  }
+  
+  .stock-change {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .positive {
+    color: #16a34a; 
+  }
+  
+  .negative {
+    color: #dc2626;
+  }
+  

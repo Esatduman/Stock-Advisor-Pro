@@ -1,4 +1,5 @@
 import './Header.css';
+import { NavLink } from 'react-router-dom'
 
 const Header = () => {
   return (
@@ -7,11 +8,21 @@ const Header = () => {
         <h1>StockPro</h1>
       </div>
       <nav className="nav-links">
-        <a href="/">Home</a>
-        <a href="/markets">Markets</a>
-        <a href="/news">News</a>
-        <a href="/portfolio">Portfolio</a>
-        <a href="/predictions">Predictions</a>
+      <NavLink exact to="/" className="nav-link" activeClassName="active-link">
+          Home
+        </NavLink>
+        <NavLink to="/markets" className="nav-link" activeClassName="active-link">
+          Markets
+        </NavLink>
+        <NavLink to="/news" className="nav-link" activeClassName="active-link">
+          News
+        </NavLink>
+        <NavLink to="/portfolio" className="nav-link" activeClassName="active-link">
+          Portfolio
+        </NavLink>
+        <NavLink to="/predictions" className="nav-link" activeClassName="active-link">
+          Predictions
+        </NavLink>
       </nav>
       <div className="auth-buttons">
         <button className="login-btn">Log In</button>

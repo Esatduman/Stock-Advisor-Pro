@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import './MarketSectors.css';
 
 const MarketSectors = () => {
   const [sectors, setSectors] = useState([]);
@@ -18,18 +17,13 @@ const MarketSectors = () => {
     setSectors(dummySectors);
   }, []);
 
-
-  const getChangeClass = (change) => {
-    return change.trim().charAt(0) === '+' ? 'positive' : 'negative';
-  };
-
   return (
     <div className="market-sectors">
       <h2>Market Sectors</h2>
       {sectors.map((sector, index) => (
         <div key={index} className="sector-item">
           <span>{sector.name}</span>
-          <span className={`sector-change ${getChangeClass(sector.change)}`}>
+          <span className={`sector-change ${sector.change.trim().startsWith('+') ? 'positive' : 'negative'}`}>
             {sector.change}
           </span>
         </div>
@@ -39,5 +33,3 @@ const MarketSectors = () => {
 };
 
 export default MarketSectors;
-
-
