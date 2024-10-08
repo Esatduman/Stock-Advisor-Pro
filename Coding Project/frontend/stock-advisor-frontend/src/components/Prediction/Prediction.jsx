@@ -2,11 +2,11 @@ import  { useState, useEffect } from 'react';
 import './Prediction.css';
 
 const Prediction = () => {
-  // Simulate fetching data from backend
+  
   const [predictions, setPredictions] = useState([]);
 
   useEffect(() => {
-    // Simulated backend response (dummy data)
+    
     const fetchData = async () => {
       const dummyData = [
         { symbol: 'AAPL', currentPrice: 165.23, potential: '+10%' },

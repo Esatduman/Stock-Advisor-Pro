@@ -4,7 +4,7 @@ import './App.css'
 import Dashboard from "./pages/Dashboard/Dashboard"
 import { BrowserRouter as Router,Route, Routes } from "react-router-dom"
 import Portfolio from "./pages/Portfolio/Portfolio"
-
+import PredictionPage from "./pages/PredictionPage/PredictionPage"
 
 const App = () => {
   return (
@@ -16,7 +16,8 @@ const App = () => {
             {/* Define Routes for different pages */}
             <Routes>
               <Route exact path="/" element={<Dashboard />} />
-              <Route path="/portfolio" element={<Portfolio />} /> 
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/predictions" element={<PredictionPage />} /> 
               
             </Routes>
           </section>

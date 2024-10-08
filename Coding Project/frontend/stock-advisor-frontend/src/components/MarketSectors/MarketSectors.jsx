@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import "./MarketSectors.css"
 
 const MarketSectors = () => {
   const [sectors, setSectors] = useState([]);

@@ -1,5 +1,5 @@
 import MarketOverview from '../../components/MarketOverview/MarketOverview';
-import Prediction from '../../components/Predication/Prediction';
+import Prediction from '../../components/Prediction/Prediction';
 import LatestNews from '../../components/LatestNews/LatestNews';
 import MarketSectors from '../../components/MarketSectors/MarketSectors';
 

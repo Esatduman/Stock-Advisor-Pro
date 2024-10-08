@@ -1,0 +1,28 @@
+/* Common layout adjustments across the prediction page */
+.predictions-summary, .predicted-stocks-container, .chart-section {
+    margin: 40px 0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #000000;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  p, h3 {
+    font-family: 'SourceSansPro', sans-serif; /* Consistent typography */
+  }
+  
+  /* Ensure the entire page is responsive */
+  @media (max-width: 768px) {
+    .predicted-stocks-container, .chart-section {
+      padding: 10px;
+      margin: 20px 0;
+    }
+  }
+  
