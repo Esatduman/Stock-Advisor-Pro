@@ -1,10 +1,10 @@
 import  { useEffect, useState } from 'react';
-import GraphicalData from '../GraphicalData/GraphicalData'; // Import the GraphicalData component
+import GraphicalData from '../GraphicalData/GraphicalData'; 
 import './PredictedStockMovement.css'
 
 const PredictedStockMovement = () => {
   const [stocks, setStocks] = useState([]);
-  const [selectedStock, setSelectedStock] = useState(null); // Add state for selected stock
+  const [selectedStock, setSelectedStock] = useState(null); 
 
   useEffect(() => {
     // Dummy data simulating stock predictions
@@ -17,7 +17,7 @@ const PredictedStockMovement = () => {
     setStocks(dummyStocks);
   }, []);
 
-  // Function to handle stock selection
+  
   const handleStockSelection = (stock) => {
     setSelectedStock(stock);
   };
@@ -30,7 +30,7 @@ const PredictedStockMovement = () => {
           <div
             key={index}
             className="stock-card"
-            onClick={() => handleStockSelection(stock)} // Add click handler
+            onClick={() => handleStockSelection(stock)} 
           >
             <h3>{stock.name}</h3>
             <p>Current Price: ${stock.currentPrice.toFixed(2)}</p>
@@ -42,7 +42,7 @@ const PredictedStockMovement = () => {
         ))}
       </div>
 
-      {/* Render the Graphical Data component and pass selected stock */}
+      
       <GraphicalData selectedStock={selectedStock} />
     </div>
   );

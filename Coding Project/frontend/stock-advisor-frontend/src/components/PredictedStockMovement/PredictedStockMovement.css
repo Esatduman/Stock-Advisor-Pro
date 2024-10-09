@@ -10,16 +10,15 @@
     color: #000;
   }
   
-  /* Flex container for the stock cards */
+
   .stock-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
   }
   
-  /* Individual stock card */
   .stock-card {
-    flex: 1 1 30%; /* Allows 3 cards per row with flex-grow, flex-shrink, and flex-basis */
+    flex: 1 1 30%; 
     padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;
@@ -33,7 +32,7 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   }
   
-  /* Stock title and information */
+
   .stock-card h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
@@ -46,30 +45,30 @@
     color: #555555;
   }
   
-  /* Stock change with color coding */
+  
   .stock-change {
     font-size: 1.5rem;
     font-weight: bold;
   }
   
   .positive {
-    color: #16a34a; /* Green for positive change */
+    color: #16a34a; 
   }
   
   .negative {
-    color: #dc2626; /* Red for negative change */
+    color: #dc2626;
   }
   
-  /* Responsive design for smaller screens */
+
   @media (max-width: 1024px) {
     .stock-card {
-      flex: 1 1 45%; /* On medium screens, two cards per row */
+      flex: 1 1 45%; 
     }
   }
   
   @media (max-width: 768px) {
     .stock-card {
-      flex: 1 1 100%; /* On small screens, one card per row */
+      flex: 1 1 100%; 
     }
   }
   

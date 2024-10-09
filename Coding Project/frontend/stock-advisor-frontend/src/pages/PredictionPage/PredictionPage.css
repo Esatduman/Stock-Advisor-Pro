@@ -1,4 +1,4 @@
-/* Common layout adjustments across the prediction page */
+
 .predictions-summary, .predicted-stocks-container, .chart-section {
     margin: 40px 0;
     padding: 20px;
@@ -15,10 +15,10 @@
   }
   
   p, h3 {
-    font-family: 'SourceSansPro', sans-serif; /* Consistent typography */
+    font-family: 'SourceSansPro', sans-serif; 
   }
   
-  /* Ensure the entire page is responsive */
+  
   @media (max-width: 768px) {
     .predicted-stocks-container, .chart-section {
       padding: 10px;

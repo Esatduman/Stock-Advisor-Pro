@@ -11,9 +11,9 @@ const GraphicalData = ({ selectedStock }) => {
 
   useEffect(() => {
     if (selectedStock) {
-      // Dummy historical and predicted data for the selected stock
-      const historicalData = [150, 152, 155, 157, 160]; // Replace with real historical data
-      const predictedData = [162, 165, 167]; // Replace with real predicted data
+      
+      const historicalData = [150, 152, 155, 157, 160]; 
+      const predictedData = [162, 165, 167]; 
 
       setChartData({
         series: [

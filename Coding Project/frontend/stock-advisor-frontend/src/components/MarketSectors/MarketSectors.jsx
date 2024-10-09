@@ -5,7 +5,7 @@ const MarketSectors = () => {
   const [sectors, setSectors] = useState([]);
 
   useEffect(() => {
-    // Dummy data simulating market sectors
+    
     const dummySectors = [
       { name: 'Technology', change: '+1.45%' },
       { name: 'Healthcare', change: '-0.32%' },
