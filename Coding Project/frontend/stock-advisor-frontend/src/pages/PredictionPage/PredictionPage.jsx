@@ -1,4 +1,5 @@
 
+import PerformanceMetrics from '../../components/PerformanceMetrics/PerformanceMetrics';
 import PredictedStockMovement from '../../components/PredictedStockMovement/PredictedStockMovement';
 import PredictionsSummary from '../../components/PredictionSummary/PredictonSummary';
 import './PredictionPage.css';
@@ -8,6 +9,7 @@ const PredictionPage = () => {
     <div className="">
         <PredictionsSummary />
         <PredictedStockMovement />
+        <PerformanceMetrics />
     </div>
   );
 };
