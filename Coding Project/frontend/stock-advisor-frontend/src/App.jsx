@@ -6,6 +6,7 @@ import { BrowserRouter as Router,Route, Routes } from "react-router-dom"
 import Portfolio from "./pages/Portfolio/Portfolio"
 import PredictionPage from "./pages/PredictionPage/PredictionPage"
 import Login from "./components/Login/Login";
+import Markets from "./pages/Markets/Markets"
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
             <Routes>
               <Route exact path="/" element={<Dashboard />} />
               <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/markets" element={<Markets />} />
               <Route path="/predictions" element={<PredictionPage />} /> 
               <Route path="/Login" element={<Login />} />
               
