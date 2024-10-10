@@ -25,7 +25,9 @@ const Header = () => {
         </NavLink>
       </nav>
       <div className="auth-buttons">
-        <button className="login-btn">Log In</button>
+      <NavLink to="/login" className="login-btn">
+          Log In
+        </NavLink>
         <button className="signup-btn">Sign Up</button>
       </div>
     </header>

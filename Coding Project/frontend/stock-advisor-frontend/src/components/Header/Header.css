@@ -41,6 +41,7 @@
 }
 
 .login-btn, .signup-btn {
+  
   padding: 10px 20px;
   border: none;
   cursor: pointer;
@@ -53,6 +54,7 @@
   background-color: #ffffff;
   color: #2563eb;
   border-radius: 5px;
+  
 }
 
 .login-btn:hover {
