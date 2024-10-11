@@ -1,8 +1,8 @@
-// Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Login = ({ setIsAuthenticated }) => {
+const Signup = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -10,25 +10,31 @@ const Login = ({ setIsAuthenticated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/api/login/', {
+      const response = await axios.post('http://localhost:8000/api/signup/', {
+        username,
         email,
         password,
       });
-      if (response.status === 200) {
-        // Set authentication state
-        setIsAuthenticated(true);
-        localStorage.setItem('authToken', response.data.token); // Save token if necessary
+      if (response.status === 201) {
+        // Registration successful, redirect to login page or auto-login
+        console.log('Signup successful');
       }
     } catch (error) {
-      setError('Login failed. Check your credentials.');
+      setError('Signup failed. Try again.');
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Signup</h2>
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
         <input
           type="email"
           placeholder="Email"
@@ -41,10 +47,10 @@ const Login = ({ setIsAuthenticated }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit">Login</button>
+        <button type="submit">Signup</button>
       </form>
     </div>
   );
 };
 
-export default Login;
+export default Signup;

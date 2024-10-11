@@ -28,7 +28,9 @@ const Header = () => {
       <NavLink to="/login" className="login-btn">
           Log In
         </NavLink>
-        <button className="signup-btn">Sign Up</button>
+        <NavLink to="/signup" className="signup-btn">
+        Sign Up
+        </NavLink>
       </div>
     </header>
   );

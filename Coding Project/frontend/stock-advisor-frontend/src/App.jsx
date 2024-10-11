@@ -8,6 +8,7 @@ import PredictionPage from "./pages/PredictionPage/PredictionPage"
 import Login from "./components/Login/Login";
 import Markets from "./pages/Markets/Markets"
 import NewsPage from "./pages/NewsPage/NewsPage"
+import Signup from "./components/Signup/Signup"
 
 const App = () => {
   return (
@@ -25,7 +26,8 @@ const App = () => {
 
               <Route path="/predictions" element={<PredictionPage />} /> 
               <Route path="/Login" element={<Login />} />
-              
+              <Route path="/Signup" element={<Signup />} />
+
             </Routes>
           </section>
         </main>
