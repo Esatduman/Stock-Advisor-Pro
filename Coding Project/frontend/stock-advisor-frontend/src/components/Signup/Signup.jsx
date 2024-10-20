@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import "./Signup.css";
 const Signup = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const Signup = () => {
   };
 
   return (
-    <div>
+    <div className="signup_container">
       <h2>Signup</h2>
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>
