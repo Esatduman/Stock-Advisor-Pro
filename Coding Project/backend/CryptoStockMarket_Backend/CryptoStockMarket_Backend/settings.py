@@ -25,15 +25,18 @@ SECRET_KEY = 'django-insecure-ur29u%g7y$)+p98wf0lfe9+kd!pvi$#0oqi_rj%e$i*_$1*0$&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 ALLOWED_HOSTS = []
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # React frontend
+    'http://localhost:8000',  # Frontend running on a different port
+    'http://localhost:5173',
 ]
 
-
-AUTH_USER_MODEL = 'accounts.AppUser'
+AUTH_USER_MODEL = 'auth.User'
 
 REST_FRAMEWORK = {
    'DEFAULT_PERMISSION_CLASSES': (

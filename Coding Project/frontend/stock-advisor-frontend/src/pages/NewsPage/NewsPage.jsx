@@ -7,27 +7,36 @@ import './NewsPage.css'
 const NewsPage = () => {
   const [newsArticles, setNewsArticles] = useState([]);
 
-  const newArticles = [];
   var run = false;
 
  {useEffect(() => {
-   const fetchData = async () => {
-     const response = await fetch('https://api.marketaux.com/v1/news/all?must_have_entities=true&language=en&api_token=h8QJCiRe1RyhLpq2H7MbGLix70llfWZ5SgjQSjel');
-     const json = await response.json();
-     console.log(json)
+
+    const fetchData = async () => {
+    const response = await fetch('http://127.0.0.1:8000/market-news/');
+    const json = await response.json();
+    console.log(json)
+    let length = 20;
 
     if(run == false){
-      for(let i = 0; i<3;i++){
-        const newArticles = [
-          {
-            title: json.data[i].title,
-            summary: json.data[i].description,
-            url: json.data[i].url,
-            imageUrl: json.data[i].image_url
-          }];
-  
-          setNewsArticles(prevArticles => [...prevArticles, ...newArticles]);
-          run = true;
+      for(let i = 0; i<length;){
+        if(json.articles[i].urlToImage != null){
+
+          const newArticles = [
+            {
+              title: json.articles[i].title,
+              summary: json.articles[i].description,
+              url: json.articles[i].url,
+              imageUrl: json.articles[i].urlToImage
+            }];
+
+            setNewsArticles(prevArticles => [...prevArticles, ...newArticles]);
+            run = true;
+            i++;
+        }
+        else{
+          i++
+          length++;
+        }
       }
     }
    };

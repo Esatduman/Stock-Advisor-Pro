@@ -5,9 +5,21 @@ from rest_framework.response import Response
 from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
 from rest_framework import permissions, status
 from .validations import custom_validation, validate_email, validate_password
+from rest_framework import permissions, viewsets
+from tutorial.quickstart.serializers import  UserSerializer
+from django.contrib.auth.models import User
+
 
     
 # Create your views here.
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class UserRegister(APIView):

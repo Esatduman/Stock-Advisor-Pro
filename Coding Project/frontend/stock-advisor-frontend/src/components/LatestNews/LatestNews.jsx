@@ -4,27 +4,41 @@ import './LatestNews.css';
 const LatestNews = () => {
   // Dummy data simulating news from the backend
   const [newsItems, setNewsItems] = useState([]);
-
+  var run = false;
   useEffect(() => {
-    const dummyNewsData = [
-      {
-        title: 'Fed Signals Potential Rate Hike Pause',
-        description: 'The Federal Reserve hints at a possible pause in interest rate hikes, citing economic uncertainties.',
-        link: '#'
-      },
-      {
-        title: 'Tech Stocks Rally on Strong Earnings',
-        description: 'Major tech companies report better-than-expected quarterly results, driving market gains.',
-        link: '#'
-      },
-      {
-        title: 'Oil Prices Surge Amid Supply Concerns',
-        description: 'Global oil prices rise sharply as geopolitical tensions threaten supply chains.',
-        link: '#'
-      }
-    ];
 
-    setNewsItems(dummyNewsData);
+    const fetchData = async () => {
+      const response = await fetch('http://127.0.0.1:8000/market-news/');
+      const json = await response.json();
+      console.log(json)
+
+      let length = 3;
+     if(run == false){
+       for(let i = 0; i<length;){
+          if(json.articles[i].author != "null"){
+
+            const newsItems = [
+              {
+                title: json.articles[i].title,
+                summary: json.articles[i].description,
+                url: json.articles[i].url,
+                imageUrl: json.articles[i].urlToImage
+              }];
+      
+              setNewsItems(prevArticles => [...prevArticles, ...newsItems]);
+              run = true;
+              i++;
+          }
+          else{
+            i++;
+            length++;
+          }
+       }
+       
+     }
+    };
+    fetchData();
+    //setNewsItems(dummyNewsData);
   }, []);
 
   return (
@@ -34,7 +48,7 @@ const LatestNews = () => {
         <div key={index} className="news-item">
           <h3>{news.title}</h3>
           <p>{news.description}</p>
-          <a href={news.link}>Read more</a>
+          <a href={news.url} target="_blank" rel="noopener noreferrer" className="read-more">Read more</a>
         </div>
       ))}
     </div>
