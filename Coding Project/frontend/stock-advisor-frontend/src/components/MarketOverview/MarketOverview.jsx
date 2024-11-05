@@ -1,27 +1,42 @@
 
 import './MarketOverview.css';
+import { useState, useEffect } from 'react'
+
 
 const MarketOverview = () => {
-  const markets = [
-    {
-      name: 'S&P 500',
-      value: '4,185.47',
-      change: '+23.45 (0.56%)',
-      color: 'positive'
-    },
-    {
-      name: 'Dow Jones',
-      value: '33,786.62',
-      change: '-118.35 (-0.35%)',
-      color: 'negative'
-    },
-    {
-      name: 'NASDAQ',
-      value: '12,263.55',
-      change: '+91.09 (0.75%)',
-      color: 'positive'
+
+  const [markets, setindices] = useState([]);
+  var run = false;
+
+  
+  {useEffect(() => {
+
+    const fetchData = async () => {
+    const response = await fetch('http://127.0.0.1:8000/market-trends/');
+    const json = await response.json();
+    console.log(json)
+    let length = 3;
+
+    if(run ==false){
+      for(let i = 0; i<length;i++){
+
+        const index = [
+          {
+            name: json.data.trends[i].name,
+            value: json.data.trends[i].price,
+            percent: json.data.trends[i].change_percent,
+            change: json.data.trends[i].change,
+            color: json.data.trends[i].change >= 0 ? 'positive' : 'negative',
+            sign: json.data.trends[i].change >= 0 ? '+' : '-'
+          }];
+      
+          setindices(prevIndex => [...prevIndex, ...index]);
+          run = true;
+      }
     }
-  ];
+   };
+   fetchData();
+  }, [])};
 
   return (
     <div className="market-overview">
@@ -30,8 +45,8 @@ const MarketOverview = () => {
         {markets.map((market, index) => (
           <div key={index} className="market-item">
             <h3>{market.name}</h3>
-            <p className="market-value">{market.value}</p>
-            <p className={`market-change ${market.color}`}>{market.change}</p>
+            <p className="market-value">{market.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p className={`market-change ${market.sign} ${market.color}`}>{market.sign}{market.change.toFixed(2)} ({market.percent.toFixed(2)}%)</p>         
           </div>
         ))}
       </div>

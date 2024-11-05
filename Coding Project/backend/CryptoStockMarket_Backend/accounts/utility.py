@@ -1,4 +1,5 @@
 import requests
+
 from django.http import JsonResponse
 
 
@@ -28,3 +29,34 @@ def get_market_news(request):
         return JsonResponse({"error": "Request timed out"}, status=504)
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+    
+def get_market_indices(request):
+
+    url = "https://real-time-finance-data.p.rapidapi.com/market-trends"
+
+    querystring = {"trend_type":"MARKET_INDEXES","country":"us","language":"en"}
+
+    headers = {
+        "x-rapidapi-key": "263233b890msh4495569179f58f3p1eec13jsn591e95ce44ca",
+        "x-rapidapi-host": "real-time-finance-data.p.rapidapi.com"
+    }
+    try:
+        response = requests.get(url, headers=headers, params=querystring)
+        index_data = response.json()
+
+        return JsonResponse(index_data)
+
+    except requests.exceptions.HTTPError as http_err:
+        return JsonResponse({"error": f"HTTP error occurred: {http_err}"}, status=response.status_code)
+    except requests.exceptions.ConnectionError:
+        return JsonResponse({"error": "Connection error"}, status=500)
+    except requests.exceptions.Timeout:
+        return JsonResponse({"error": "Request timed out"}, status=504)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+    
+
+
+
+
+
