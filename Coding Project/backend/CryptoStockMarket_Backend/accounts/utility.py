@@ -37,7 +37,7 @@ def get_market_indices(request):
     querystring = {"trend_type":"MARKET_INDEXES","country":"us","language":"en"}
 
     headers = {
-        "x-rapidapi-key": "263233b890msh4495569179f58f3p1eec13jsn591e95ce44ca",
+        "x-rapidapi-key": "d6ebb271damsh49e7e28d47b4edfp1a676fjsn2712f515cc63",
         "x-rapidapi-host": "real-time-finance-data.p.rapidapi.com"
     }
     try:
@@ -54,6 +54,27 @@ def get_market_indices(request):
         return JsonResponse({"error": "Request timed out"}, status=504)
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+    
+def get_market_sectors(request):
+    url = ("https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=DtyIBs6VOsSrcNSKQphAy1zklzCVmI9n")
+
+
+    try:
+        response = requests.get(url)
+        sector_data = response.json()
+
+        return JsonResponse(sector_data, safe=False)
+
+    except requests.exceptions.HTTPError as http_err:
+        return JsonResponse({"error": f"HTTP error occurred: {http_err}"}, status=response.status_code)
+    except requests.exceptions.ConnectionError:
+        return JsonResponse({"error": "Connection error"}, status=500)
+    except requests.exceptions.Timeout:
+        return JsonResponse({"error": "Request timed out"}, status=504)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+
+
     
 
 

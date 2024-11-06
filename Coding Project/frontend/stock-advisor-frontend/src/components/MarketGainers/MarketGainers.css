@@ -1,0 +1,41 @@
+.market-gainers {
+    margin-top: 40px;
+}
+  
+  .market-gainers h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #000000;
+    font-weight: bold; 
+    text-align: left;  
+  }
+  
+  .stock-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0; 
+    border-bottom: 1px solid #e5e7eb; 
+  }
+  
+  .stock-item span {
+    font-size: 1.2rem;
+  }
+  
+  .stock-item:hover {
+    background-color: #f9fafb; 
+  }
+  
+  .stock-change {
+    font-size: 1.2rem;
+    font-weight: bold; 
+  }
+  
+  .positive {
+    color: #16a34a; 
+  }
+  
+  .negative {
+    color: #dc2626; 
+  }
+  

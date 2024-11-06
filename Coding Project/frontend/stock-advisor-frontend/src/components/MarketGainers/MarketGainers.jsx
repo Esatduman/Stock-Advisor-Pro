@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import "./MarketSectors.css"
+import "./MarketGainers.css"
 
-const MarketSectors = () => {
+const MarketGainers = () => {
   const [gainers, setGainers] = useState([]);
   var run = false;
 
@@ -32,13 +32,13 @@ const MarketSectors = () => {
   }, []);
 
   return (
-    <div className="market-sectors">
+    <div className="market-gainers">
       <h2>Top Gainers</h2>
       {gainers.map((stock, index) => (
-        <div key={index} className="sector-item">
+        <div key={index} className="stock-item">
           <span>{stock.name}:</span>
           <span 
-          key={index} className="sector-change positive" style={{ color: 'green', fontWeight: 'bold' }}>
+          key={index} className="stock-change positive" style={{ color: 'green', fontWeight: 'bold' }}>
           {parseFloat(stock.change).toFixed(2)}%
           </span>
         </div>
@@ -47,4 +47,4 @@ const MarketSectors = () => {
   );
 };
 
-export default MarketSectors;
+export default MarketGainers;
