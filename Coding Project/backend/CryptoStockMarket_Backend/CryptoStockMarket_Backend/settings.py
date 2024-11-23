@@ -36,6 +36,8 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 
 
 # Application definition
+AUTH_USER_MODEL = 'accounts.AppUser'
+
 
 INSTALLED_APPS = [
     "corsheaders",
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "accounts"
 ]
 
 CORS_ALLOWED_ORIGINS = [

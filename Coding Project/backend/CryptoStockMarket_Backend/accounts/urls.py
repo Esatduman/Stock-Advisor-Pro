@@ -5,7 +5,7 @@ from . import views
 from . import utility
 
 router = routers.DefaultRouter()
-#router.register(r'users', views.UserViewSet)
+router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
     
@@ -17,5 +17,5 @@ urlpatterns = [
     path('login/', views.UserLogin.as_view(), name='login'),      # User login
     path('logout/', views.UserLogout.as_view(), name='logout'),    # User logout
     path('check-login/', views.CheckLoginStatus.as_view(), name='check_login'),
-	#path('user', views.UserView.as_view(), name='user'),
+	path('user', views.UserView.as_view(), name='user'),
 ]

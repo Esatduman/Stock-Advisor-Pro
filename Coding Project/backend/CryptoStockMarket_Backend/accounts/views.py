@@ -8,6 +8,11 @@ from .validations import custom_validation, validate_email, validate_password
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timezone import now
+from rest_framework import permissions, viewsets
+from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
+
+
 
 
 
@@ -58,7 +63,7 @@ class UserLogin(APIView):
 
         serializer = UserLoginSerializer(data={'username': username, 'password': password})
         if serializer.is_valid():
-            user = serializer.check_user({'username': username, 'password': password})
+            user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
                 user.last_login = now()
@@ -107,3 +112,12 @@ class UserView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+    
+class UserViewSet(viewsets.ModelViewSet):
+    
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = UserModel.objects.all().order_by('username')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]

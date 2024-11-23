@@ -23,7 +23,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 			user = UserModel.objects.create_user(
 			username=validated_data['username'],  # Access validated data (clean data)
 			email=validated_data['email'],  # Email field
-			password=validated_data['password']  # Password is automatically hashed
+			password=validated_data['password'],  # Password is automatically hashed
 			)
 			return user
 class UserLoginSerializer(serializers.Serializer):
@@ -39,4 +39,4 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserModel
-		fields = ('email', 'username')
+		fields = ('email', 'username' )
