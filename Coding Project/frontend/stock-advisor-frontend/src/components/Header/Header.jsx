@@ -1,7 +1,13 @@
+import { useEffect } from 'react';
 import './Header.css';
+import Logout from '../Logout/Logout';
 import { NavLink } from 'react-router-dom';
 
 const Header = () => {
+
+  const isLoggedIn = !!localStorage.getItem('authToken'); // Check if user is logged in
+
+  
   return (
     <header className="header">
       <div className="logo">
@@ -41,12 +47,19 @@ const Header = () => {
         </NavLink>
       </nav>
       <div className="auth-buttons">
-        <NavLink to="/login" className="login-btn">
-          Log In
-        </NavLink>
-        <NavLink to="/signup" className="signup-btn">
-          Sign Up
-        </NavLink>
+        
+        {isLoggedIn ? (
+          <Logout /> // Show the logout button if the user is logged in
+        ) : (
+          <>
+            <NavLink to="/login" className="login-btn">
+              Log In
+            </NavLink>
+            <NavLink to="/signup" className="signup-btn">
+              Sign Up
+            </NavLink>
+          </>
+        )}
       </div>
     </header>
   );
