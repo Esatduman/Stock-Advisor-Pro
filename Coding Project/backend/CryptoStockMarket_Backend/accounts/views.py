@@ -11,9 +11,13 @@ from django.utils.timezone import now
 from rest_framework import permissions, viewsets
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
-
-
-
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from .models import AppUser
+from .serializers import UserProfileSerializer
+import uuid
+from django.middleware.csrf import get_token
 
 
 import logging
@@ -21,6 +25,7 @@ import logging
 # Get the custom user model
 UserModel = get_user_model()
 
+@method_decorator(csrf_protect, name = 'dispatch')
 class UserRegister(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -36,7 +41,8 @@ class UserRegister(APIView):
                 'message': 'User registered successfully',
                 'user': {
                     'username': user.username,
-                    'email': user.email
+                    'email': user.email,
+                    'balance': user.balance
                 }
             }, status=status.HTTP_201_CREATED)
 
@@ -44,6 +50,8 @@ class UserRegister(APIView):
     
 logger = logging.getLogger(__name__)
 
+
+@method_decorator(csrf_protect, name = 'dispatch')
 class UserLogin(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = (SessionAuthentication,)
@@ -73,29 +81,30 @@ class UserLogin(APIView):
                     'message': 'Login successful',
                     'user': {
                         'username': user.username,
-                        'email': user.email
+                        'email': user.email,
+                        'balance': user.balance
                     }
                 }, status=status.HTTP_200_OK)
+        
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class CheckLoginStatus(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated 
     
-    @csrf_exempt
+@method_decorator(csrf_protect, name = 'dispatch')
+class CheckLoginStatus(APIView):
     def get(self, request):
         if request.user.is_authenticated:
             return Response({
                 'message': 'User is logged in.',
                 'user': {
                     'username': request.user.username,
-                    'email': request.user.email
+                    'email': request.user.email,
+                    'balance': request.user.balance
                 }
             }, status=200)
         else:
             return Response({'message': 'User is not logged in.'}, status=401)
 
-
+@method_decorator(csrf_protect, name = 'dispatch')
 class UserLogout(APIView):
     permission_classes = (permissions.AllowAny,)
     authentication_classes = ()
@@ -121,3 +130,82 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = UserModel.objects.all().order_by('username')
     serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
+
+class UpdateBalance(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+
+    @csrf_exempt
+    def post(self, request):
+        # Get the current user
+        user = request.user
+        
+        # Get the new balance from the request data
+        new_balance = request.data.get('balance')
+        
+        if new_balance is None:
+            return Response({'detail': 'Balance is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update the balance for the user
+        user.balance = new_balance
+        user.save()
+
+        return Response({'message': 'Balance updated successfully.'}, status=status.HTTP_200_OK)
+    
+    
+@method_decorator(ensure_csrf_cookie, name='dispatch')
+class GetCSRFToken(APIView):
+    permission_classes = (permissions. AllowAny, )
+    def get(self, request, format=None):
+        token = get_token(request)
+        return Response({"token": token}, status=200)
+
+
+class GetUsersView(APIView):
+    permission_classes = (permissions.AllowAny, )
+    def get(self, request, format=None) :
+        users = UserModel.objects.all()
+
+        users = UserSerializer(users, many=True)
+        return Response (users.data)
+    
+class GetUserProfileView(APIView):
+    def get(self, request, format=None):
+
+        user = self.request.user
+        username = user.username
+
+        user_profile = UserModel.objects.get(email=user.email)
+
+       # user_profile = AppUser.objects.filter(user=user)
+        user_profile = UserProfileSerializer(user_profile)
+
+        return Response({ 'profile': user_profile.data, 'username': str(username) })
+    
+
+class UpdateUserBalanceView(APIView):
+    def put (self, request, format=None):
+        user = self.request.user
+        balance = user.balance
+
+        data = self.request.data
+
+        balance = data['balance']
+
+        user_profile = UserModel.objects.get(email=user.email)
+
+        AppUser.objects.filter(email=user.email).update(balance=balance)
+
+        user_profile = UserProfileSerializer(user_profile)
+
+        return Response({ 'profile': user_profile.data, 'balance' : balance})
+    
+class GetUserBalance(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Assuming the User model has a 'balance' field
+        user = self.request.user
+        balance = user.balance  # Get balance from the logged-in user
+        return Response({'balance': balance})

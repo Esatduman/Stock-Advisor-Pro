@@ -14,7 +14,6 @@ const MarketOverview = () => {
     const fetchData = async () => {
     const response = await fetch('http://127.0.0.1:8000/market-trends/');
     const json = await response.json();
-    console.log(json)
     let length = 3;
 
     if(run ==false){

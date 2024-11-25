@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
@@ -9,22 +9,61 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [csrfToken, setCsrfToken] = useState(null); // Store CSRF token here
   const navigate = useNavigate();
+
+  // Fetch the CSRF token when the component mounts
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        // Send request to get CSRF cookie
+        await axios.get('http://127.0.0.1:8000/csrf_cookie', {
+          withCredentials: true, // Ensure cookies are included
+        });
+
+        // Extract the CSRF token from cookies
+        const csrfTokenFromCookie = document.cookie.match(/csrftoken=([^;]+)/);
+        if (csrfTokenFromCookie) {
+          setCsrfToken(csrfTokenFromCookie[1]); // Save the token in state
+        } else {
+          console.error('CSRF token not found in cookies');
+        }
+      } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+      }
+    };
+
+    fetchCsrfToken();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (!csrfToken) {
+      setError('CSRF token is missing.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post('http://127.0.0.1:8000/signup/', { 
-        username,
-        email,
-        password,
-      });
+      // Include CSRF token in the headers
+      const response = await axios.post(
+        'http://localhost:8000/signup/',
+        { username, email, password },
+        {
+          headers: {
+            'X-CSRFTOKEN': csrfToken,
+          },
+          withCredentials: true,
+        }
+      );
       if (response.status === 201) {
         navigate('/login'); // Redirect to login page
-        console.log("Sign Up successful" , response)
+        console.log('Sign Up successful', response);
       }
     } catch (error) {
+      console.error('Signup error:', error);
       setError('Signup failed. Try again.');
     } finally {
       setLoading(false);
@@ -32,8 +71,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="login-container"> {/* Matches login-container class */}
-      <div className="login-box"> {/* Matches login-box class */}
+    <div className="login-container">
+      <div className="login-box">
         <h2>Signup</h2>
         {error && <p>{error}</p>}
         <form onSubmit={handleSubmit}>

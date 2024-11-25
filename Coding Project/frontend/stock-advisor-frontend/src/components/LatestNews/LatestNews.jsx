@@ -10,7 +10,6 @@ const LatestNews = () => {
     const fetchData = async () => {
       const response = await fetch('http://127.0.0.1:8000/market-news/');
       const json = await response.json();
-      console.log(json)
 
       let length = 3;
      if(run == false){

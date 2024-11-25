@@ -9,7 +9,6 @@ const MarketGainers = () => {
     const fetchData = async () => {
       const response = await fetch('http://127.0.0.1:8000/market-gainers/');
       const json = await response.json();
-      console.log(json[0])
       let length = 6;
   
       if(run ==false){

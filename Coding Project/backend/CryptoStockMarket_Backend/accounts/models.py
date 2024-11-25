@@ -3,6 +3,8 @@
 # # Create your models here.
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+import uuid
+
 
 class AppUserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
@@ -20,9 +22,11 @@ class AppUserManager(BaseUserManager):
         return user
 
 class AppUser(AbstractBaseUser):
+
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255, unique=True) 
 
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

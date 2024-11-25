@@ -30,10 +30,47 @@ CORS_ALLOW_CREDENTIALS = True
 
 ALLOWED_HOSTS = []
 
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = False
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+CSRF_COOKIE_SAMESITE = 'None'
 
+CSRF_COOKIE_NAME = 'csrftoken'
+
+CSRF_COOKIE_DOMAIN = 'localhost'  # Use 'localhost' for consistency with frontend
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+)
+CORS_ALLOWED_ORIGINS =  [
+    
+     'http://localhost:5174',  
+]
+
+CORS_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://localhost:5174',  
+    'http://127.0.0.1:5174',  
+    'http://127.0.0.1:8000',
+]
+CSRF_TRUSTED_ORIGINS = [
+     'http://localhost:5174', 
+]
+CORS_ORIGINS_WHITELIST = [
+     'http://localhost:5174',  
+]
 
 # Application definition
 AUTH_USER_MODEL = 'accounts.AppUser'
@@ -51,10 +88,7 @@ INSTALLED_APPS = [
     "accounts"
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',  # Frontend running on a different port
-    'http://localhost:5173',
-]
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -104,6 +138,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        'HOST' : 'localhost'
     }
 }
 
@@ -148,3 +183,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}

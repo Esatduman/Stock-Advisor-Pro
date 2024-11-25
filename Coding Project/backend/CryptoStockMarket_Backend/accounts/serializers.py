@@ -18,14 +18,21 @@ UserModel = get_user_model()
 class UserRegisterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserModel
-		fields = ['username', 'email', 'password']
-		def create(self, validated_data):
-			user = UserModel.objects.create_user(
+		fields = ['username', 'email', 'password', 'balance']
+
+	def create(self, validated_data):
+
+		balance = validated_data.get('balance', 10000.00) 
+		
+		user = UserModel.objects.create_user(
 			username=validated_data['username'],  # Access validated data (clean data)
 			email=validated_data['email'],  # Email field
 			password=validated_data['password'],  # Password is automatically hashed
-			)
-			return user
+		)
+		user.balance = balance
+		user.save()
+		return user
+		
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
@@ -39,4 +46,9 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserModel
-		fields = ('email', 'username' )
+		fields = ('email', 'username', 'balance' )
+
+class UserProfileSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = UserModel
+		fields = '__all__'

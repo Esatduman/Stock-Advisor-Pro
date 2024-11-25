@@ -7,7 +7,7 @@ const Header = () => {
 
   const isLoggedIn = !!localStorage.getItem('authToken'); // Check if user is logged in
 
-  
+
   return (
     <header className="header">
       <div className="logo">
