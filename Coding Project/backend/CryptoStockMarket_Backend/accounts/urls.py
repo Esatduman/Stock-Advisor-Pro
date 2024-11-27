@@ -23,5 +23,11 @@ urlpatterns = [
     path('get_users/', views.GetUsersView.as_view(), name='get_users'),
     path('user/', views.GetUserProfileView.as_view(), name='user'),
     path('update_balance/', views.UpdateUserBalanceView.as_view(), name='update_balance'),
+    path('update_stocks/', views.BuyStockView.as_view(), name='update_stocks'),
     path('get_balance/', views.GetUserBalance.as_view(), name='get_balance'),
+    path('stock_price/', utility.get_stock_price, name='stock_price'),
+    path('get_user_stocks/', views.GetUserStocksView.as_view(), name='get_user_stocks'),  # Get user's stocks
+    path('sell_stocks/', views.SellStockView.as_view(), name='sell_stocks'),
+
+
 ]

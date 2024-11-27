@@ -3,7 +3,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, UserLoginSerializer, UserSerializer, StockSerializer
 from .validations import custom_validation, validate_email, validate_password
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +18,9 @@ from .models import AppUser
 from .serializers import UserProfileSerializer
 import uuid
 from django.middleware.csrf import get_token
+from .models import Stock
+from django.db import transaction
+from decimal import Decimal
 
 
 import logging
@@ -30,8 +33,6 @@ class UserRegister(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        # You may not need custom_validation, unless you have custom logic
-        # If you do, ensure it's correctly cleaning the data
         clean_data = custom_validation(request.data) if custom_validation else request.data
 
         serializer = UserRegisterSerializer(data=clean_data)
@@ -138,16 +139,13 @@ class UpdateBalance(APIView):
 
     @csrf_exempt
     def post(self, request):
-        # Get the current user
         user = request.user
         
-        # Get the new balance from the request data
         new_balance = request.data.get('balance')
         
         if new_balance is None:
             return Response({'detail': 'Balance is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Update the balance for the user
         user.balance = new_balance
         user.save()
 
@@ -178,7 +176,6 @@ class GetUserProfileView(APIView):
 
         user_profile = UserModel.objects.get(email=user.email)
 
-       # user_profile = AppUser.objects.filter(user=user)
         user_profile = UserProfileSerializer(user_profile)
 
         return Response({ 'profile': user_profile.data, 'username': str(username) })
@@ -205,7 +202,115 @@ class GetUserBalance(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Assuming the User model has a 'balance' field
         user = self.request.user
-        balance = user.balance  # Get balance from the logged-in user
+        balance = user.balance  
         return Response({'balance': balance})
+    
+class GetUserStocksView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = self.request.user
+        stocks = Stock.objects.filter(user_email=user.email)
+
+        stock_serializer = StockSerializer(stocks, many=True)
+        return Response({'stocks': stock_serializer.data}, status=status.HTTP_200_OK)
+    
+@method_decorator(csrf_protect, name='dispatch')  
+class BuyStockView(APIView):
+    def post(self, request):
+        try:
+            if not request.user.is_authenticated:
+                return Response({"error": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+
+            user_email = request.user.email
+            ticker = request.data.get('ticker')
+            quantity = request.data.get('quantity')
+            price = request.data.get('price')
+
+
+            if not all([ticker, quantity, price]):
+                return Response({"error": "All fields (ticker, quantity, price) are required."},
+                                 status=status.HTTP_400_BAD_REQUEST)
+            try:
+                quantity = int(quantity)
+                price = Decimal(price)
+            except ValueError:
+                return Response({"error": "Quantity must be an integer and price must be a float."},
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+  
+            with transaction.atomic():
+                stock = Stock.objects.filter(user_email=user_email, ticker=ticker).first()
+
+                if stock:
+                    existing_quantity = stock.quantity
+                    new_quantity = existing_quantity + quantity
+
+                    total_cost = (existing_quantity * stock.price) + (quantity * price)
+                    weighted_average_price = total_cost / new_quantity
+
+                    stock.quantity = new_quantity
+                    stock.price = weighted_average_price
+                    stock.save()
+
+                    logger.info(f"Updated stock: {ticker}, New Quantity: {new_quantity}, Average Price: {weighted_average_price}")
+                else:
+                    Stock.objects.create(
+                        user_email=user_email,
+                        ticker=ticker,
+                        quantity=quantity,
+                        price=price
+                    )
+                    logger.info(f"Created new stock: {ticker}, Quantity: {quantity}, Price: {price}")
+
+            return Response({"success": "Stock successfully updated or created."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Error in BuyStockView: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@method_decorator(csrf_protect, name='dispatch')  
+class SellStockView(APIView):
+    def post(self, request):
+        try:
+            if not request.user.is_authenticated:
+                return Response({"error": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+
+            user_email = request.user.email
+            ticker = request.data.get('ticker')
+            quantity = request.data.get('quantity')
+
+            if not all([ticker, quantity]):
+                return Response({"error": "Both ticker and quantity are required."},
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                quantity = int(quantity)
+            except ValueError:
+                return Response({"error": "Quantity must be an integer."}, status=status.HTTP_400_BAD_REQUEST)
+
+            stock = Stock.objects.filter(user_email=user_email, ticker=ticker).first()
+
+            if not stock:
+                
+                return Response({"error": "You don't own this stock."}, status=status.HTTP_404_NOT_FOUND)
+
+            if stock.quantity < quantity:
+                return Response({"error": "You don't have enough shares to sell."}, status=status.HTTP_400_BAD_REQUEST)
+
+            with transaction.atomic():
+                stock.quantity -= quantity
+
+                if stock.quantity == 0:
+                    stock.delete()
+                    logger.info(f"Sold all shares of {ticker}. Stock record deleted.")
+                else:
+                    stock.save()
+                    logger.info(f"Sold {quantity} shares of {ticker}. New Quantity: {stock.quantity}")
+
+            return Response({"success": f"Successfully sold {quantity} shares of {ticker}."}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Error in SellStockView: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

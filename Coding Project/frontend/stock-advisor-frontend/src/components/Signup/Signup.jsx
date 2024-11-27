@@ -12,8 +12,31 @@ const Signup = () => {
   const [csrfToken, setCsrfToken] = useState(null); // Store CSRF token here
   const navigate = useNavigate();
 
+  
   // Fetch the CSRF token when the component mounts
   useEffect(() => {
+
+    const setCsrfCookie = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/csrf_cookie', {
+          withCredentials: true,
+        });
+  
+        // Extract the CSRF token from the response if necessary
+        const csrfToken = response.data.token; // Adjust this based on your backend response format
+        console.log(csrfToken , "     000000")
+        if (csrfToken) {
+          document.cookie = `csrftoken=${csrfToken}; Path=/; Domain=localhost; Max-Age=31449600; SameSite=Lax;`;
+          console.log('CSRF cookie set manually:', document.cookie);
+        }
+      } catch (error) {
+        console.error('Error setting CSRF cookie:', error);
+      }
+    };
+  
+    setCsrfCookie();
+
+
     const fetchCsrfToken = async () => {
       try {
         // Send request to get CSRF cookie

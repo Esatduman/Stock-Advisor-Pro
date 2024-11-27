@@ -20,7 +20,7 @@ const MarketGainers = () => {
               change: json[i].changesPercentage,
               color: 'positive'
             }];
-        
+            
             setGainers(prevIndex => [...prevIndex, ...gainer]);
             run = true;
         }
