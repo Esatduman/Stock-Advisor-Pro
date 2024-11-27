@@ -38,12 +38,21 @@
   .metric-card p {
     font-size: 1.2rem;
     margin-bottom: 8px;
-    color: #555555;
   }
   
   @media (max-width: 768px) {
     .metric-card {
       flex: 1 1 100%;
     }
+  }
+
+  .positive {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .negative {
+    color: red;
+    font-weight: bold;
   }
   

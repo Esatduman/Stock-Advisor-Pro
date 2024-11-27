@@ -206,6 +206,31 @@ class GetUserBalance(APIView):
         balance = user.balance  
         return Response({'balance': balance})
     
+class UpdateUserInitial_BalanceView(APIView):
+    def put (self, request, format=None):
+        user = self.request.user
+        initial_balance = user.initial_balance
+
+        data = self.request.data
+
+        initial_balance = data['initial_balance']
+
+        user_profile = UserModel.objects.get(email=user.email)
+
+        AppUser.objects.filter(email=user.email).update(initial_balance=initial_balance)
+
+        user_profile = UserProfileSerializer(user_profile)
+
+        return Response({ 'profile': user_profile.data, 'initial_balance' : initial_balance})
+    
+class GetUserInitialBalance(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = self.request.user
+        initial_balance = user.initial_balance  
+        return Response({'initial_balance': initial_balance})
+    
 class GetUserStocksView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -314,3 +339,13 @@ class SellStockView(APIView):
         except Exception as e:
             logger.error(f"Error in SellStockView: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class GetCurrentHoldings(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        stocks = Stock.objects.filter(user_email=user.email)
+
+        stock_serializer = StockSerializer(stocks, many=True)
+        return Response(stock_serializer.data, status=status.HTTP_200_OK)

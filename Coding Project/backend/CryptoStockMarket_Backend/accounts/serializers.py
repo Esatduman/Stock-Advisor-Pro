@@ -19,11 +19,13 @@ UserModel = get_user_model()
 class UserRegisterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserModel
-		fields = ['username', 'email', 'password', 'balance']
+		fields = ['username', 'email', 'password', 'balance', 'initial_balance']
 
 	def create(self, validated_data):
 
 		balance = validated_data.get('balance', 10000.00) 
+
+		initial_balance = validated_data.get('initial_balance', 10000.00) 
 		
 		user = UserModel.objects.create_user(
 			username=validated_data['username'],  # Access validated data (clean data)
@@ -31,6 +33,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 			password=validated_data['password'],  # Password is automatically hashed
 		)
 		user.balance = balance
+		user.initial_balance = initial_balance
 		user.save()
 		return user
 		
@@ -56,7 +59,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = UserModel
-		fields = ('email', 'username', 'balance', 'stocks')
+		fields = ('email', 'username', 'balance', 'initial_balance','stocks')
 
 	def get_stocks(self, obj):
 		stocks = Stock.objects.filter(user_email=obj.email)

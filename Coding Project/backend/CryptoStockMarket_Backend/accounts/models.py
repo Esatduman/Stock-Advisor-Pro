@@ -28,6 +28,8 @@ class AppUser(AbstractBaseUser):
 
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
 
+    initial_balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
+
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 

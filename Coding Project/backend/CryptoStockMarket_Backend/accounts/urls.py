@@ -28,6 +28,8 @@ urlpatterns = [
     path('stock_price/', utility.get_stock_price, name='stock_price'),
     path('get_user_stocks/', views.GetUserStocksView.as_view(), name='get_user_stocks'),  # Get user's stocks
     path('sell_stocks/', views.SellStockView.as_view(), name='sell_stocks'),
+    path('current_holdings/', views.GetCurrentHoldings.as_view(), name='current_holdings'),
+    path('initial_balance/', views.GetUserInitialBalance.as_view(), name='initial_balance'),
 
 
 ]

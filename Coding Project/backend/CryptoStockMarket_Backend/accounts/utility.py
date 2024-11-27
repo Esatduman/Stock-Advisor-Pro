@@ -38,7 +38,7 @@ def get_stock_price(request):
     querystring = {"data_type":"stocks","country":"US"}
 
     headers = {
-        "x-rapidapi-key": "d6ebb271damsh49e7e28d47b4edfp1a676fjsn2712f515cc63",
+        "x-rapidapi-key": "3a99c338a3msh9f883ec9eb52e63p11e1f9jsn0d735c537b7c",
         "x-rapidapi-host": "investing11.p.rapidapi.com"
     }
 

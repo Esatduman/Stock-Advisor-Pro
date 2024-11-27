@@ -238,22 +238,22 @@ const Markets = () => {
         
         const response = await fetch('http://127.0.0.1:8000/stock_price/');
         const json = await response.json();
-          for(let i = 0; i<30;i++){
-            if(query.toLowerCase() == (json.data[i].symbol).toLowerCase() || query.toLowerCase() == (json.data[i].name).toLowerCase()){
+        for(let i = 0; i<30;i++){
+          if(query.toLowerCase() == (json.data[i].symbol).toLowerCase() || query.toLowerCase() == (json.data[i].name).toLowerCase()){
 
-              name = json.data[i].name
-              price = json.data[i].last
-              symbol = json.data[i].symbol
-              const stockdata = [
-                {
-                  name: json.data[i].name,
-                  price: json.data[i].last,
-                  Symbol: json.data[i].symbol
-                }];
-                stockInfo = stockdata;
-                setStock(prevIndex => [...prevIndex, ...stockdata]);
-            }
+            name = json.data[i].name
+            price = json.data[i].last
+            symbol = json.data[i].symbol
+            const stockdata = [
+              {
+                name: json.data[i].name,
+                price: json.data[i].last,
+                Symbol: json.data[i].symbol
+              }];
+              stockInfo = stockdata;
+              setStock(prevIndex => [...prevIndex, ...stockdata]);
           }
+        }
       }
       catch{
 
