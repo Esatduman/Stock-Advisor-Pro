@@ -97,7 +97,7 @@ class CheckLoginStatus(APIView):
     def get(self, request):
         if request.user.is_authenticated:
             return Response({
-                'message': 'User is logged in.',
+                'status': True,
                 'user': {
                     'username': request.user.username,
                     'email': request.user.email,
@@ -372,10 +372,18 @@ class WatchlistView(APIView):
         except Watchlist.DoesNotExist:
             return Response({'error': 'Ticker not found in watchlist.'}, status=status.HTTP_404_NOT_FOUND)
         
-    def get(self, request, ticker):
-        # Check if the ticker exists in the watchlist
-        exists = Watchlist.objects.filter(ticker=ticker).exists()
-        return Response({'exists': exists})
+    def get(self, request, ticker=None):
+        """Check if a ticker exists in the current user's watchlist."""
+        if ticker is not None:
+            user_email = request.user.email  # Get the authenticated user's email
+            exists = Watchlist.objects.filter(user_email=user_email, ticker=ticker).exists()
+            return Response({'exists': exists})
+        else:
+            # Retrieve the user's watchlist if no ticker is provided
+            user_email = request.user.email
+            watchlist = Watchlist.objects.filter(user_email=user_email)
+            serializer = WatchlistSerializer(watchlist, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
     
 @method_decorator(csrf_protect, name='dispatch')  
 class GetCurrentWatchlist(APIView):

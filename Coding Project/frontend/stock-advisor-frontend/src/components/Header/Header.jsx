@@ -7,7 +7,8 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/check-login", { credentials: "include" }).then(resp => {
+    fetch("http://localhost:8000/check-login", { credentials: "include" }).then(resp => {
+      console.log(resp.ok)
       setIsLoggedIn(resp.ok);
     })
   }, [])

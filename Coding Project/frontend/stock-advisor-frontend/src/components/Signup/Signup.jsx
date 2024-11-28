@@ -24,7 +24,6 @@ const Signup = () => {
   
         // Extract the CSRF token from the response if necessary
         const csrfToken = response.data.token; // Adjust this based on your backend response format
-        console.log(csrfToken , "     000000")
         if (csrfToken) {
           document.cookie = `csrftoken=${csrfToken}; Path=/; Domain=localhost; Max-Age=31449600; SameSite=Lax;`;
           console.log('CSRF cookie set manually:', document.cookie);

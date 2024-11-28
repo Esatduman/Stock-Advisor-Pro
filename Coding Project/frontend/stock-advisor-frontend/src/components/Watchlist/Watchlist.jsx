@@ -57,7 +57,6 @@ const Watchlist = () => {
   const mergeWatchlistWithPrices = () => {
     return watchlist.map((ticker) => {
       const stock = stockPrices.find((price) => price.symbol === ticker.ticker); // Match by symbol
-      //console.log(stock, "     00 0 0 0  0 0")
       return {
         ticker,
         price: stock ? parseFloat(stock.last) : 0, // Use stock price or default to 0

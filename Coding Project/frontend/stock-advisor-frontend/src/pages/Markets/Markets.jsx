@@ -20,6 +20,7 @@ const Markets = () => {
     const [balance, setBalance] = useState(10000);
     const [showAddToWatchlist, setShowAddToWatchlist] = useState(false);
     const [isInWatchlist, setIsInWatchlist] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [chartData, setChartData] = useState({
       series: [],
       options: {}
@@ -47,9 +48,17 @@ const Markets = () => {
           console.error('Error fetching CSRF token:', error);
         }
       };
+      const fetchloginstatus = async () => {
+        fetch("http://localhost:8000/check-login", { credentials: "include" }).then(resp => {
+        console.log(resp.ok)
+        setIsLoggedIn(resp.ok);
+        })
+      }
   
       fetchCsrfToken();
+      fetchloginstatus();
     }, []);
+    
 
     const fetchUserBalance = async () => {
       try {
@@ -66,7 +75,7 @@ const Markets = () => {
         }
       } catch (error) {
         console.error('Error fetching balance:', error);
-        alert('An error occurred while fetching the balance.');
+        console.log('An error occurred while fetching the balance.');
       }
     };
     useEffect(() => {
@@ -209,7 +218,6 @@ const Markets = () => {
 
           } catch (error) {
               console.error('Error:', error);
-              return false;
           }
   
          
@@ -395,7 +403,7 @@ const Markets = () => {
         }
       } catch (error) {
         console.error('Error updating balance:', error);
-        alert('An error occurred while updating the balance.');
+        console.log('An error occurred while updating the balance.');
       }
 
     };
@@ -528,42 +536,49 @@ const Markets = () => {
               </div>
           )}
   
-          {stock.length > 0 && (
-              <div className="stock-details">
-                  <h2>{stock[0].name} {stock[0].symbol}</h2>
-                  <p>Current Price: ${stock[0].price}</p>
-              </div>
-          )}
-
-          {showAddToWatchlist && (
-            <button className="add-to-watchlist-button" onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}>
-              {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
-            </button>
-          )}
           
-  
-          <div className="buy-sell-section">
-            {chartData.series.length > 0 && (
-              <>
-                <span className="quantity-label">Quantity:</span>
-                <input
-                  type="number"
-                  placeholder="Enter quantity"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="quantity-input"
-                />
-                <div className="action-buttons">
-                  <button onClick={handleBuy} className="buy-button">
-                    Buy
-                  </button>
-                  <button onClick={handleSell} className="sell-button">
-                    Sell
-                  </button>
+
+          {isLoggedIn && (
+            <>
+              {stock.length > 0 && (
+                <div className="stock-details">
+                    <h2>{stock[0].name} {stock[0].symbol}</h2>
+                    <p>Current Price: ${stock[0].price}</p>
                 </div>
-              </>
-            )}
-          </div>
+              )}
+              {showAddToWatchlist && (
+                <button
+                  className="add-to-watchlist-button"
+                  onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}
+                >
+                  {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                </button>
+              )}
+
+              <div className="buy-sell-section">
+                {chartData.series.length > 0 && (
+                  <>
+                    <span className="quantity-label">Quantity:</span>
+                    <input
+                      type="number"
+                      placeholder="Enter quantity"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="quantity-input"
+                    />
+                    <div className="action-buttons">
+                      <button onClick={handleBuy} className="buy-button">
+                        Buy
+                      </button>
+                      <button onClick={handleSell} className="sell-button">
+                        Sell
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
       </div>
   );
 };  
