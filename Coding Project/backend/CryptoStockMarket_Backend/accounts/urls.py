@@ -9,7 +9,6 @@ router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [
-    
     path('', include(router.urls)),
     path('market-news/', utility.get_market_news, name='market_news'),
     path('market-trends/', utility.get_market_indices, name='market_trends'),
