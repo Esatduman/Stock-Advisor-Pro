@@ -1,11 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './Header.css';
 import Logout from '../Logout/Logout';
 import { NavLink } from 'react-router-dom';
 
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = !!localStorage.getItem('authToken'); // Check if user is logged in
+  useEffect(() => {
+    fetch("http://localhost:8000/api/check-login", { credentials: "include" }).then(resp => {
+      setIsLoggedIn(resp.ok);
+    })
+  }, [])
 
 
   return (
