@@ -29,7 +29,9 @@ urlpatterns = [
     path('get_user_stocks/', views.GetUserStocksView.as_view(), name='get_user_stocks'),  # Get user's stocks
     path('sell_stocks/', views.SellStockView.as_view(), name='sell_stocks'),
     path('current_holdings/', views.GetCurrentHoldings.as_view(), name='current_holdings'),
-    path('initial_balance/', views.GetUserInitialBalance.as_view(), name='initial_balance'),
+    path('watchlist/', views.WatchlistView.as_view(), name='watchlist-list'),  # For retrieving and adding tickers
+    path('watchlist/<str:ticker>/', views.WatchlistView.as_view(), name='watchlist-detail'),
+    path('get_watchlist/', views.GetCurrentWatchlist.as_view(), name='get-watchlist'),  # For retrieving and adding tickers
 
 
 ]

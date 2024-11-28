@@ -28,8 +28,6 @@ class AppUser(AbstractBaseUser):
 
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
 
-    initial_balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
-
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
@@ -62,3 +60,13 @@ class Stock(models.Model):
 
     class Meta:
         unique_together = ('user_email', 'ticker') 
+
+class Watchlist(models.Model):
+    user_email = models.EmailField()
+    ticker = models.CharField(max_length=10)  # Stock ticker symbol (e.g., AAPL)
+    
+    def __str__(self):
+        return f"{self.ticker}%)"
+
+    class Meta:
+        unique_together = ('user_email', 'ticker')

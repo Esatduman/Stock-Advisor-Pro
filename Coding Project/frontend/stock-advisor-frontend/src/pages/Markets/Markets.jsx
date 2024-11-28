@@ -18,6 +18,8 @@ const Markets = () => {
     const [error, setError] = useState(null);
     const [stockData, setStockData] = useState([]);
     const [balance, setBalance] = useState(10000);
+    const [showAddToWatchlist, setShowAddToWatchlist] = useState(false);
+    const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [chartData, setChartData] = useState({
       series: [],
       options: {}
@@ -76,6 +78,7 @@ const Markets = () => {
     const handleSearch = async (e) => {
 
       setStock([])
+      setShowAddToWatchlist(false)
       name = ''
       price = null;
       symbol = ''
@@ -107,12 +110,7 @@ const Markets = () => {
       if (e.target.value.length > 2 && e.key == "Enter") {
         
         const apiKey = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY
-                
-        // const stockResponse = await fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${e.target.value}&apikey=${apiKey}`);
-        // const stockSearchData = await stockResponse.json();
-
-        // console.log(apiKey)
-        // console.log(stockSearchData)
+              
 
         const options = {
           method: 'GET',
@@ -188,6 +186,31 @@ const Markets = () => {
             price: closingPrices[closingPrices.length - 1],
             volume: dailyData[dates[0]]['5. volume']
           });
+          setShowAddToWatchlist(true);
+
+          try {
+            const response =  await axios.get(`http://localhost:8000/watchlist/${symbol}/`,
+              {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                withCredentials: true,
+            });
+            
+            console.log(response)
+            console.log(`Ticker ${symbol} exists: ${response.data.exists}`);
+            if(response.data.exists){
+              setIsInWatchlist(true)
+            }
+            else{
+              setIsInWatchlist(false)
+            }
+
+          } catch (error) {
+              console.error('Error:', error);
+              return false;
+          }
   
          
           setChartData({
@@ -227,6 +250,51 @@ const Markets = () => {
         
       }
     };
+    
+    const handleAddToWatchlist = async () => {
+      if (!showAddToWatchlist) {
+          alert('No stock found to add to watchlist.');
+          return;
+      }
+
+      try {
+        console.log(stockData.symbol + "  000 0 ")
+          const response = await axios.post('http://localhost:8000/watchlist/', {
+              ticker: stockData.symbol,
+          }, 
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfToken,
+              },
+              withCredentials: true,
+          });
+          setIsInWatchlist(true)
+        
+      } catch (error) {
+          console.error('Error adding stock to watchlist:', error);
+          alert('An error occurred while adding stock to the watchlist.');
+      }
+  };
+
+  const handleRemoveFromWatchlist = async () => {
+    try {
+      const response = await axios.delete(`http://localhost:8000/watchlist/${stockData.symbol}/`, {
+        data: { ticker: stockData.symbol },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        withCredentials: true,
+      });
+  
+        setIsInWatchlist(false); // Mark as removed from watchlist
+      
+    } catch (error) {
+      console.error('Error removing stock from watchlist:', error);
+      alert('An error occurred while removing stock from the watchlist.');
+    }
+  };
 
     const handleBuy = async () => {
       if (!quantity) {
@@ -358,6 +426,7 @@ const Markets = () => {
 
       try {
         // Send the login request with CSRF token in the header
+        
         const response = await axios.post('http://localhost:8000/sell_stocks/', {
           ticker: symbol,
           quantity: quantity,
@@ -465,6 +534,13 @@ const Markets = () => {
                   <p>Current Price: ${stock[0].price}</p>
               </div>
           )}
+
+          {showAddToWatchlist && (
+            <button className="add-to-watchlist-button" onClick={isInWatchlist ? handleRemoveFromWatchlist : handleAddToWatchlist}>
+              {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+            </button>
+          )}
+          
   
           <div className="buy-sell-section">
             {chartData.series.length > 0 && (

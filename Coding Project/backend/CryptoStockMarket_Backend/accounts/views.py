@@ -21,6 +21,8 @@ from django.middleware.csrf import get_token
 from .models import Stock
 from django.db import transaction
 from decimal import Decimal
+from .models import Watchlist
+from .serializers import WatchlistSerializer
 
 
 import logging
@@ -205,31 +207,7 @@ class GetUserBalance(APIView):
         user = self.request.user
         balance = user.balance  
         return Response({'balance': balance})
-    
-class UpdateUserInitial_BalanceView(APIView):
-    def put (self, request, format=None):
-        user = self.request.user
-        initial_balance = user.initial_balance
 
-        data = self.request.data
-
-        initial_balance = data['initial_balance']
-
-        user_profile = UserModel.objects.get(email=user.email)
-
-        AppUser.objects.filter(email=user.email).update(initial_balance=initial_balance)
-
-        user_profile = UserProfileSerializer(user_profile)
-
-        return Response({ 'profile': user_profile.data, 'initial_balance' : initial_balance})
-    
-class GetUserInitialBalance(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = self.request.user
-        initial_balance = user.initial_balance  
-        return Response({'initial_balance': initial_balance})
     
 class GetUserStocksView(APIView):
     permission_classes = [IsAuthenticated]
@@ -295,6 +273,7 @@ class BuyStockView(APIView):
             logger.error(f"Error in BuyStockView: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @method_decorator(csrf_protect, name='dispatch')  
 class SellStockView(APIView):
     def post(self, request):
@@ -349,3 +328,62 @@ class GetCurrentHoldings(APIView):
 
         stock_serializer = StockSerializer(stocks, many=True)
         return Response(stock_serializer.data, status=status.HTTP_200_OK)
+    
+    
+@method_decorator(csrf_protect, name='dispatch')  
+class WatchlistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Retrieve the user's watchlist."""
+        user_email = request.user.email  # Ensure this matches how the user is authenticated
+        watchlist = Watchlist.objects.filter(user_email=user_email)
+        serializer = WatchlistSerializer(watchlist, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Add a new ticker to the user's watchlist."""
+        user_email = request.user.email  # Get the authenticated user's email
+        ticker = request.data.get('ticker')
+        
+
+        if not all([ticker]):
+            return Response({'error': 'All fields (ticker) are required.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the ticker already exists in the user's watchlist
+        watchlist_item, created = Watchlist.objects.get_or_create(
+            user_email=user_email,
+            ticker=ticker,
+        )
+
+        if created:
+            return Response({'message': 'Ticker added to watchlist.'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message': 'Ticker already in watchlist.'}, status=status.HTTP_200_OK)
+
+    def delete(self, request, ticker):
+        """Remove a ticker from the user's watchlist."""
+        user_email = request.user.email  # Get the authenticated user's email
+        try:
+            watchlist_item = Watchlist.objects.get(user_email=user_email, ticker=ticker)
+            watchlist_item.delete()
+            return Response({'message': 'Ticker removed from watchlist.'}, status=status.HTTP_204_NO_CONTENT)
+        except Watchlist.DoesNotExist:
+            return Response({'error': 'Ticker not found in watchlist.'}, status=status.HTTP_404_NOT_FOUND)
+        
+    def get(self, request, ticker):
+        # Check if the ticker exists in the watchlist
+        exists = Watchlist.objects.filter(ticker=ticker).exists()
+        return Response({'exists': exists})
+    
+@method_decorator(csrf_protect, name='dispatch')  
+class GetCurrentWatchlist(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        watch_list = Watchlist.objects.filter(user_email=user.email)
+
+        watch_list_serializer = WatchlistSerializer(watch_list, many=True)
+        return Response(watch_list_serializer.data, status=status.HTTP_200_OK)

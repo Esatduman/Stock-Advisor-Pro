@@ -4,9 +4,11 @@ import axios from 'axios';
 
 const FundManagement = () => {
   const [balance, setBalance] = useState(10000); // Initial balance for dummy data
+
   const [amount, setAmount] = useState('');
   const [action, setAction] = useState('add'); // Action type (add, transfer, withdraw)
   const [csrfToken, setCsrfToken] = useState(''); // Store CSRF token
+
 
   // Function to fetch the CSRF token from the server and set it
   const fetchCsrfToken = async () => {
@@ -14,7 +16,6 @@ const FundManagement = () => {
       const response = await axios.get('http://127.0.0.1:8000/csrf_cookie', {
         withCredentials: true, // Ensure cookies are sent with the request
       });
-      console.log(response);
       const csrfTokenFromCookie = document.cookie.match(/csrftoken=([^;]+)/);
       if (csrfTokenFromCookie) {
         setCsrfToken(csrfTokenFromCookie[1]); // Store CSRF token in state
@@ -46,7 +47,7 @@ const FundManagement = () => {
       console.error('Error fetching balance:', error);
       alert('An error occurred while fetching the balance.');
     }
-  };
+  }
 
   // UseEffect to fetch balance on page load (after user logs in)
   useEffect(() => {
@@ -81,7 +82,6 @@ const FundManagement = () => {
     if (isNaN(updatedBalance)) {
       updatedBalance = 0;  // Fallback to 0 if balance is not a valid number
     }
-
     // Perform the balance update based on the action
     if (action === 'add') {
       updatedBalance += parsedAmount;

@@ -75,6 +75,8 @@ const Holdings = () => {
 
   const holdingsWithPrices = mergeHoldingsWithPrices();
 
+  
+
   return (
     <div className="holdings-section">
       <h2 className="section-title">Current Holdings</h2>

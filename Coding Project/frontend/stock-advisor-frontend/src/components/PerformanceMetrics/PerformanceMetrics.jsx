@@ -6,7 +6,6 @@ const PerformanceMetrics = () => {
 
   const [csrfToken, setCsrfToken] = useState('');
   const [balance, setBalance] = useState(null);
-  const [initial_balance, setInitialBalance] = useState(null);
   const [metrics, setMetrics] = useState({
     totalValue: 0,
     totalProfitLoss: 0,
@@ -48,23 +47,6 @@ const PerformanceMetrics = () => {
     }
   };
 
-  const fetchUserInitialBalance = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/initial_balance/', {
-        headers: { 'X-CSRFToken': csrfToken },
-        withCredentials: true,
-      });
-      if (response.status === 200) {
-        setInitialBalance(response.data.initial_balance);
-      } else {
-        console.log('Failed to fetch initial_balance.');
-      }
-    } catch (error) {
-      console.error('Error fetching initial_balance:', error);
-      console.log('An error occurred while fetching the initial_balance.');
-    }
-  };
-
   // Fetch User Holdings
   const fetchUserHoldings = async () => {
     try {
@@ -97,6 +79,8 @@ const PerformanceMetrics = () => {
   const calculateMetrics = (holdings, stockPrices) => {
     let totalHoldingsValue = 0;
     let totalProfitLoss = 0;
+    let totalProfitLossdollars = 0;
+
     let bestStock = null;
     let worstStock = null;
     let sumprofitloss = 0;
@@ -108,10 +92,11 @@ const PerformanceMetrics = () => {
       const profitLoss = stock && holding.price
         ? ((currentPrice - holding.price) / holding.price) * 100
         : 0;
-      
+      const profitLossdollars = (currentPrice*holding.quantity) - (holding.price*holding.quantity);
 
       totalHoldingsValue += stockValue;
       sumprofitloss+=profitLoss
+      totalProfitLossdollars+=profitLossdollars
 
       // Identify best and worst stocks
       if (!bestStock || profitLoss > bestStock.profitLoss) {
@@ -126,12 +111,9 @@ const PerformanceMetrics = () => {
     const totalPortfolioValue = totalHoldingsValue + (balance || 0);
 
     // Calculate Total Profit/Loss (%)
-    totalProfitLoss =
-      ((totalPortfolioValue - initial_balance) / initial_balance) * 100;
-    console.log (initial_balance)
     setMetrics({
       totalValue: totalPortfolioValue,
-      totalProfitLoss: totalProfitLoss.toFixed(2),
+      totalProfitLoss: totalProfitLossdollars.toFixed(2),
       averageReturn:
         holdings.length > 0
           ? (sumprofitloss / holdings.length).toFixed(2)
@@ -145,7 +127,7 @@ const PerformanceMetrics = () => {
   useEffect(() => {
     fetchCsrfToken();
     fetchUserBalance();
-    fetchUserInitialBalance();
+    
   }, []);
 
   useEffect(() => {
@@ -157,10 +139,10 @@ const PerformanceMetrics = () => {
       calculateMetrics(holdings, stockPrices);
     };
 
-    if (balance !== null && initial_balance !== null) {
+    if (balance !== null) {
       fetchData();
     }
-  }, [balance, initial_balance]);
+  }, [balance]);
 
   const getClassForValue = (value) => (value >= 0 ? 'positive' : 'negative');
 
@@ -175,7 +157,7 @@ const PerformanceMetrics = () => {
         <div className="metric-card">
           <h3>Total Profit/Loss</h3>
           <p className={getClassForValue(metrics.totalProfitLoss)}>
-            {metrics.totalProfitLoss}%
+            ${metrics.totalProfitLoss}
           </p>
         </div>
         <div className="metric-card">
