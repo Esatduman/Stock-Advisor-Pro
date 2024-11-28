@@ -15,6 +15,7 @@ const StockSearch = () => {
         const response = await fetch(
           `https://financialmodelingprep.com/api/v3/search?query=${inputValue}&limit=10&apikey=${apiKey}`
         );
+
         if (response.ok) {
           const data = await response.json();
           setResults(data);

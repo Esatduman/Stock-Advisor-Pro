@@ -1,7 +1,11 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import './PerformanceMetrics.css';
 
 const PerformanceMetrics = () => {
+
+  const [csrfToken, setCsrfToken] = useState('');
+  const [balance, setBalance] = useState(null);
   const [metrics, setMetrics] = useState({
     totalValue: 0,
     totalProfitLoss: 0,
@@ -10,45 +14,137 @@ const PerformanceMetrics = () => {
     worstStock: null,
   });
 
-  useEffect(() => {
-    // Dummy data simulating portfolio holdings
-    const holdings = [
-      { name: 'AAPL', currentPrice: 150, purchasePrice: 130, quantity: 10 },
-      { name: 'TSLA', currentPrice: 700, purchasePrice: 600, quantity: 5 },
-      { name: 'GOOGL', currentPrice: 2800, purchasePrice: 2500, quantity: 3 }
-    ];
-
-    if (holdings.length > 0) {
-      let totalValue = 0;
-      let totalProfitLoss = 0;
-      let bestStock = holdings[0];
-      let worstStock = holdings[0];
-
-      holdings.forEach((stock) => {
-        const stockValue = stock.currentPrice * stock.quantity;
-        totalValue += stockValue;
-        const stockProfitLoss = ((stock.currentPrice - stock.purchasePrice) / stock.purchasePrice) * 100;
-        totalProfitLoss += stockProfitLoss;
-
-        if (stockProfitLoss > ((bestStock.currentPrice - bestStock.purchasePrice) / bestStock.purchasePrice) * 100) {
-          bestStock = stock;
-        }
-        if (stockProfitLoss < ((worstStock.currentPrice - worstStock.purchasePrice) / worstStock.purchasePrice) * 100) {
-          worstStock = stock;
-        }
+  // Fetch CSRF Token
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/csrf_cookie', {
+        withCredentials: true,
       });
-
-      const averageReturn = totalProfitLoss / holdings.length;
-
-      setMetrics({
-        totalValue,
-        totalProfitLoss: totalProfitLoss.toFixed(2),
-        averageReturn: averageReturn.toFixed(2),
-        bestStock,
-        worstStock,
-      });
+      const csrfTokenFromCookie = document.cookie.match(/csrftoken=([^;]+)/);
+      if (csrfTokenFromCookie) {
+        setCsrfToken(csrfTokenFromCookie[1]);
+      }
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
     }
+  };
+
+  // Fetch User Balance
+  const fetchUserBalance = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/get_balance/', {
+        headers: { 'X-CSRFToken': csrfToken },
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        setBalance(response.data.balance);
+      } else {
+        console.log('Failed to fetch balance.');
+      }
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+      console.log('An error occurred while fetching the balance.');
+    }
+  };
+
+  // Fetch User Holdings
+  const fetchUserHoldings = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/current_holdings/', {
+        headers: { 'X-CSRFToken': csrfToken },
+        withCredentials: true,
+      });
+      if (response.status === 200) {
+        return response.data;
+      }
+    } catch (error) {
+      console.error('Error fetching user holdings:', error);
+      return [];
+    }
+  };
+
+  // Fetch Stock Prices
+  const fetchStockPrices = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/stock_price/');
+      const json = await response.json();
+      return json.data || json;
+    } catch (error) {
+      console.error('Error fetching stock prices:', error);
+      return [];
+    }
+  };
+
+  // Calculate Metrics
+  const calculateMetrics = (holdings, stockPrices) => {
+    let totalHoldingsValue = 0;
+    let totalProfitLoss = 0;
+    let totalProfitLossdollars = 0;
+
+    let bestStock = null;
+    let worstStock = null;
+    let sumprofitloss = 0;
+
+    holdings.forEach((holding) => {
+      const stock = stockPrices.find((price) => price.symbol === holding.ticker);
+      const currentPrice = stock ? parseFloat(stock.last) : 0;
+      const stockValue = holding.quantity * currentPrice;
+      const profitLoss = stock && holding.price
+        ? ((currentPrice - holding.price) / holding.price) * 100
+        : 0;
+      const profitLossdollars = (currentPrice*holding.quantity) - (holding.price*holding.quantity);
+
+      totalHoldingsValue += stockValue;
+      sumprofitloss+=profitLoss
+      totalProfitLossdollars+=profitLossdollars
+
+      // Identify best and worst stocks
+      if (!bestStock || profitLoss > bestStock.profitLoss) {
+        bestStock = { ...holding, currentPrice, profitLoss };
+      }
+      if (!worstStock || profitLoss < worstStock.profitLoss) {
+        worstStock = { ...holding, currentPrice, profitLoss };
+      }
+    });
+
+    // Total Portfolio Value = Total Holdings Value + Cash Balance
+    const totalPortfolioValue = totalHoldingsValue + (balance || 0);
+
+    // Calculate Total Profit/Loss (%)
+    setMetrics({
+      totalValue: totalPortfolioValue,
+      totalProfitLoss: totalProfitLossdollars.toFixed(2),
+      averageReturn:
+        holdings.length > 0
+          ? (sumprofitloss / holdings.length).toFixed(2)
+          : 0,
+      bestStock,
+      worstStock,
+    });
+  };
+
+  // Fetch and Calculate Data
+  useEffect(() => {
+    fetchCsrfToken();
+    fetchUserBalance();
+    
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const [holdings, stockPrices] = await Promise.all([
+        fetchUserHoldings(),
+        fetchStockPrices(),
+      ]);
+      calculateMetrics(holdings, stockPrices);
+    };
+
+    if (balance !== null) {
+      fetchData();
+    }
+  }, [balance]);
+
+  const getClassForValue = (value) => (value >= 0 ? 'positive' : 'negative');
 
   return (
     <div className="performance-metrics-container">
@@ -60,22 +156,30 @@ const PerformanceMetrics = () => {
         </div>
         <div className="metric-card">
           <h3>Total Profit/Loss</h3>
-          <p>{metrics.totalProfitLoss}%</p>
+          <p className={getClassForValue(metrics.totalProfitLoss)}>
+            ${metrics.totalProfitLoss}
+          </p>
         </div>
         <div className="metric-card">
           <h3>Average Return</h3>
-          <p>{metrics.averageReturn}%</p>
+          <p className={getClassForValue(metrics.averageReturn)}>
+            {metrics.averageReturn}%
+          </p>
         </div>
         {metrics.bestStock && (
           <div className="metric-card">
             <h3>Best Performing Stock</h3>
-            <p>{metrics.bestStock.name}: {((metrics.bestStock.currentPrice - metrics.bestStock.purchasePrice) / metrics.bestStock.purchasePrice * 100).toFixed(2)}%</p>
+            <p className={getClassForValue(metrics.bestStock.profitLoss)}>
+              {metrics.bestStock.ticker}: {metrics.bestStock.profitLoss.toFixed(2)}%
+            </p>
           </div>
         )}
         {metrics.worstStock && (
           <div className="metric-card">
             <h3>Worst Performing Stock</h3>
-            <p>{metrics.worstStock.name}: {((metrics.worstStock.currentPrice - metrics.worstStock.purchasePrice) / metrics.worstStock.purchasePrice * 100).toFixed(2)}%</p>
+            <p className={getClassForValue(metrics.worstStock.profitLoss)}>
+              {metrics.worstStock.ticker}: {metrics.worstStock.profitLoss.toFixed(2)}%
+            </p>
           </div>
         )}
       </div>

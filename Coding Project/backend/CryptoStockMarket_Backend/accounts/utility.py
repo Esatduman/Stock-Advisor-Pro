@@ -30,6 +30,39 @@ def get_market_news(request):
     except requests.exceptions.RequestException as e:
         return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
     
+
+def get_stock_price(request):
+
+    url = "https://investing11.p.rapidapi.com/get_market_data"
+
+    querystring = {"data_type":"stocks","country":"US"}
+
+    headers = {
+        "x-rapidapi-key": "3a99c338a3msh9f883ec9eb52e63p11e1f9jsn0d735c537b7c",
+        "x-rapidapi-host": "investing11.p.rapidapi.com"
+    }
+
+    try:
+
+        response = requests.get(url, headers=headers, params=querystring)
+
+        price_data = response.json()
+
+        #print(response.json())
+
+        return JsonResponse(price_data)
+
+    except requests.exceptions.HTTPError as http_err:
+        return JsonResponse({"error": f"HTTP error occurred: {http_err}"}, status=response.status_code)
+    except requests.exceptions.ConnectionError:
+        return JsonResponse({"error": "Connection error"}, status=500)
+    except requests.exceptions.Timeout:
+        return JsonResponse({"error": "Request timed out"}, status=504)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
+
+
+    
 def get_market_indices(request):
 
     url = "https://real-time-finance-data.p.rapidapi.com/market-trends"

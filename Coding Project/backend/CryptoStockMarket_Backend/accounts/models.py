@@ -48,3 +48,25 @@ class AppUser(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+    
+class Stock(models.Model):
+    user_email = models.EmailField()  # Store user's email directly here
+    ticker = models.CharField(max_length=10)  # Stock ticker symbol (e.g., AAPL)
+    quantity = models.PositiveIntegerField()  # Number of stocks owned
+    price = models.DecimalField(max_digits=10, decimal_places=2)  # Purchase price per stock
+
+    def __str__(self):
+        return f"{self.ticker} - {self.quantity} shares"
+
+    class Meta:
+        unique_together = ('user_email', 'ticker') 
+
+class Watchlist(models.Model):
+    user_email = models.EmailField()
+    ticker = models.CharField(max_length=10)  # Stock ticker symbol (e.g., AAPL)
+    
+    def __str__(self):
+        return f"{self.ticker}%)"
+
+    class Meta:
+        unique_together = ('user_email', 'ticker')
